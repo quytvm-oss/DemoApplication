@@ -1,0 +1,7 @@
+server:
+  port: ${SERVER_PORT:8085}
+  servlet:
+    context-path: /api/v1/dev
+  error:
+    include-message: always
+    include-binding-errors: always

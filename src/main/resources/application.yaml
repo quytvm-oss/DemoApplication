@@ -1,0 +1,138 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api/v1
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  application:
+    name: demo
+
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/demo?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh}
+    username: ${DBMS_USERNAME:admin}
+    password: ${DBMS_PASSWORD:12345678}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    hikari:
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:10}
+      minimum-idle: ${HIKARI_MIN_IDLE:5}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT:30000}
+      idle-timeout: ${HIKARI_IDLE_TIMEOUT:600000}
+      max-lifetime: ${HIKARI_MAX_LIFETIME:1800000}
+      pool-name: DemoHikariPool
+
+  jpa:
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: ${HIBERNATE_SHOW_SQL:true}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: MyScheduler
+            instanceId: AUTO
+            dataSource: jdbc:mysql://localhost:3306/demo?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh
+          threadPool:
+            threadCount: 10
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRT_
+            isClustered: true
+            clusterCheckinInterval: 20000
+
+
+#cache
+cache:
+  user:
+    ttl: 5
+    max-size: 500
+  product:
+    ttl: 15
+    max-size: 2000
+  default:
+    ttl: 10
+    max-size: 1000
+
+redis:
+  host: localhost
+  port: 6379
+  password: mq@31072001
+  timeout: 2000
+
+# Snowflake ID Generator
+snowflake:
+  generator-id: ${SNOWFLAKE_GENERATOR_ID:1}
+
+# JWT Configuration
+jwt:
+  signerKey: ${JWT_SIGNER_KEY:1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij}
+  valid-duration: ${JWT_VALID_DURATION:3600}        # 1 hour (in seconds)
+  refreshable-duration: ${JWT_REFRESH_DURATION:604800} # 7 days (in seconds)
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.example.devop.demo: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+  logback:
+    rollingpolicy:
+      # Dùng theo NGÀY, không phải giây
+      file-name-pattern: logs/application-%d{yyyy-MM-dd}.%i.log
+      max-file-size: 300KB
+      max-history: 30  # Giữ 30 NGÀY
+      total-size-cap: 1GB
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+
+storage:
+  type: local
+  base-path: ./static-files
+  url-base: /static-contents
+
+websocket:
+  allowed-origins: http://localhost:3000,http://localhost:4200,https://yourdomain.com
+  message-size-limit: 128
+  send-buffer-size-limit: 512
+  send-time-limit: 20000
+
+  # WebSocket Message Size Limits
+
+# Management endpoints (for monitoring)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

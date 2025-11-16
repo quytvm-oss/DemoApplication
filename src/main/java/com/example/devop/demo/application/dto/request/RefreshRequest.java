@@ -1,0 +1,14 @@
+package com.example.devop.demo.application.dto.request;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class RefreshRequest {
+    String accessToken;
+    String refreshToken;
+}
